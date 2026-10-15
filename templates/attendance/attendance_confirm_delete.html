@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirm Delete Attendance - Gym Management System{% endblock %}
+
+{% block content %}
+<h2>Confirm Attendance Deletion</h2>
+
+<p>
+    Are you sure you want to permanently delete Attendance Record #{{ attendance.id }} for member 
+    <strong>{{ attendance.member.get_full_name|default:attendance.member.username }}</strong> on {{ attendance.attendance_date }}?
+</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Yes, Permanently Delete Record">
+    <a href="{% url 'attendance_list' %}">Cancel</a>
+</form>
+{% endblock %}

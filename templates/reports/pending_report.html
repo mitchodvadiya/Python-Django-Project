@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Pending Registrations Report - Gym Management System{% endblock %}
+
+{% block content %}
+<h2>Pending Registration Requests Report</h2>
+<p>Log of user accounts currently awaiting administrator verification.</p>
+
+<p>
+    <a href="{% url 'report_overview' %}">&laquo; Back to Reports Hub</a> | 
+    <a href="{% url 'pending_users_list' %}">Go to Approval Console</a>
+</p>
+
+{% if pending_users %}
+    <table border="1" cellpadding="6" cellspacing="0">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Username</th>
+                <th>Full Name</th>
+                <th>Requested Role</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Registration Timestamp</th>
+                <th>Current Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in pending_users %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><strong>{{ u.user.username }}</strong></td>
+                    <td>{{ u.user.get_full_name|default:"Not Provided" }}</td>
+                    <td>{{ u.get_role_display }}</td>
+                    <td>{{ u.user.email }}</td>
+                    <td>{{ u.phone }}</td>
+                    <td>{{ u.user.date_joined|date:"Y-m-d H:i:s" }}</td>
+                    <td><strong>{{ u.get_status_display }}</strong></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No pending accounts found. All registrations are approved or processed.</p>
+{% endif %}
+{% endblock %}

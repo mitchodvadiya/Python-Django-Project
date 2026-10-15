@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Gym Management System{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <div>
+        <h2>Administrator Dashboard</h2>
+        <p style="margin: 0;">Welcome, <strong>{{ user.get_full_name|default:user.username }}</strong>! System running with full administrative privileges.</p>
+    </div>
+    <div>
+        <a href="{% url 'pending_users_list' %}" class="btn {% if pending_registrations > 0 %}btn-danger{% else %}btn-secondary{% endif %}">
+            Pending Approvals ({{ pending_registrations }})
+        </a>
+    </div>
+</div>
+
+<!-- Stat Grid Cards -->
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="stat-label">Approved Members</div>
+        <div class="stat-value">{{ total_approved_members }}</div>
+        <a href="{% url 'member_list' %}">Manage Members &rarr;</a>
+    </div>
+
+    <div class="stat-card {% if pending_registrations > 0 %}card-warning{% endif %}">
+        <div class="stat-label">Pending Requests</div>
+        <div class="stat-value">{{ pending_registrations }}</div>
+        <a href="{% url 'pending_users_list' %}">Review Requests &rarr;</a>
+    </div>
+
+    <div class="stat-card card-success">
+        <div class="stat-label">Active Subscriptions</div>
+        <div class="stat-value">{{ active_memberships }}</div>
+        <a href="{% url 'member_membership_list' %}?status=active">View Active Plans &rarr;</a>
+    </div>
+
+    <div class="stat-card card-danger">
+        <div class="stat-label">Expired Subscriptions</div>
+        <div class="stat-value">{{ expired_memberships }}</div>
+        <a href="{% url 'member_membership_list' %}?status=expired">View Expired &rarr;</a>
+    </div>
+
+    <div class="stat-card card-success">
+        <div class="stat-label">Total Revenue (Paid)</div>
+        <div class="stat-value">Rs. {{ total_payments }}</div>
+        <a href="{% url 'payment_list' %}">Payment Ledger &rarr;</a>
+    </div>
+</div>
+
+<div class="card">
+    <h3>Quick Operational Actions</h3>
+    <p>Perform key gym tasks directly:</p>
+    <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px;">
+        <a href="{% url 'member_create' %}" class="btn">+ Add Member</a>
+        <a href="{% url 'plan_create' %}" class="btn btn-secondary">+ New Plan</a>
+        <a href="{% url 'assign_plan' %}" class="btn btn-secondary">Assign Plan</a>
+        <a href="{% url 'payment_create' %}" class="btn btn-success">+ Record Payment</a>
+        <a href="{% url 'mark_attendance' %}" class="btn btn-success">+ Member Check-in</a>
+        <a href="{% url 'workout_create' %}" class="btn btn-secondary">+ Assign Workout</a>
+        <a href="{% url 'report_overview' %}" class="btn btn-secondary">View Reports</a>
+    </div>
+</div>
+
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h3 style="margin: 0;">Pending Registrations Awaiting Verification</h3>
+        <a href="{% url 'pending_users_list' %}">View All &rarr;</a>
+    </div>
+
+    {% if pending_users %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Full Name</th>
+                    <th>Requested Role</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Date Joined</th>
+                    <th>Quick Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in pending_users %}
+                    <tr>
+                        <td><strong>{{ item.user.username }}</strong></td>
+                        <td>{{ item.user.get_full_name|default:"-" }}</td>
+                        <td><span class="badge badge-pending">{{ item.get_role_display }}</span></td>
+                        <td>{{ item.user.email }}</td>
+                        <td>{{ item.phone }}</td>
+                        <td>{{ item.user.date_joined|date:"M d, Y" }}</td>
+                        <td>
+                            <form method="POST" action="{% url 'approve_user' item.user.id %}">
+                                {% csrf_token %}
+                                <input type="submit" value="Approve" class="btn btn-success">
+                            </form>
+                            <form method="POST" action="{% url 'reject_user' item.user.id %}">
+                                {% csrf_token %}
+                                <input type="submit" value="Reject" class="btn btn-danger">
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="margin: 0; color: #16a34a;">All user registration requests have been processed. No pending approvals.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Access Denied - Gym Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Access Denied</h2>
+    <p>Trainer dashboard has been disabled. Please contact the gym administrator.</p>
+    <a href="{% url 'login' %}" class="btn">&laquo; Return to Login</a>
+</div>
+{% endblock %}

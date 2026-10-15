@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Attendance Log Report - Gym Management System{% endblock %}
+
+{% block content %}
+<h2>Gym Attendance Report</h2>
+<p>Log of member attendance entries with check-in and check-out records.</p>
+
+<p>
+    <a href="{% url 'report_overview' %}">&laquo; Back to Reports Hub</a> | 
+    <a href="{% url 'attendance_list' %}">Go to Attendance Log</a>
+</p>
+
+{% if attendances %}
+    <table border="1" cellpadding="6" cellspacing="0">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Member Full Name</th>
+                <th>Username</th>
+                <th>Date</th>
+                <th>Check-in Time</th>
+                <th>Check-out Time</th>
+                <th>Visit Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in attendances %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><strong>{{ a.member.get_full_name|default:a.member.username }}</strong></td>
+                    <td>{{ a.member.username }}</td>
+                    <td>{{ a.attendance_date }}</td>
+                    <td>{{ a.check_in_time }}</td>
+                    <td>{{ a.check_out_time|default:"Active (In Gym)" }}</td>
+                    <td>
+                        {% if a.check_out_time %}
+                            Completed
+                        {% else %}
+                            <strong>INSIDE GYM</strong>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No attendance records logged.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Subscription - Gym Management System{% endblock %}
+
+{% block content %}
+<h2>Confirm Delete Subscription</h2>
+
+<div class="card" style="max-width: 600px;">
+    <p>Are you sure you want to remove the subscription record for <strong>{{ membership.member.get_full_name|default:membership.member.username }}</strong>?</p>
+
+    <table border="1" cellpadding="6" cellspacing="0">
+        <tr>
+            <th>Plan</th>
+            <td>{{ membership.plan.name }} (Rs. {{ membership.plan.price }})</td>
+        </tr>
+        <tr>
+            <th>Start Date</th>
+            <td>{{ membership.start_date }}</td>
+        </tr>
+        <tr>
+            <th>Expiry Date</th>
+            <td>{{ membership.expiry_date }}</td>
+        </tr>
+        <tr>
+            <th>Status</th>
+            <td>{{ membership.status|upper }}</td>
+        </tr>
+    </table>
+
+    <br>
+    <form method="POST">
+        {% csrf_token %}
+        <input type="submit" value="Yes, Delete Record" class="btn btn-danger">
+        <a href="{% url 'member_membership_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

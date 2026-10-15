@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Workout Plans - Gym Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+            <h2>Workout Routine Management</h2>
+            <p style="margin: 0;">Create, modify, and assign structured exercise splits to members by day of the week.</p>
+        </div>
+        <div>
+            <a href="{% url 'workout_create' %}" class="btn btn-success">+ Assign New Exercise</a>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 16px;">
+        <strong>Filter by Day:</strong>
+        <a href="{% url 'workout_list' %}" class="btn {% if not selected_day %}{% else %}btn-secondary{% endif %}" style="padding: 4px 10px; font-size: 0.82rem;">All Days</a>
+        {% for d in days %}
+            <a href="{% url 'workout_list' %}?day={{ d }}" class="btn {% if selected_day == d %}btn-success{% else %}btn-secondary{% endif %}" style="padding: 4px 10px; font-size: 0.82rem;">{{ d }}</a>
+        {% endfor %}
+    </div>
+
+    {% if workouts %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Member</th>
+                    <th>Day</th>
+                    <th>Exercise Name</th>
+                    <th>Sets</th>
+                    <th>Reps</th>
+                    <th>Trainer</th>
+                    <th>Instructions</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for w in workouts %}
+                    <tr>
+                        <td><strong>{{ w.member.get_full_name|default:w.member.username }}</strong></td>
+                        <td><span class="badge badge-approved">{{ w.workout_day }}</span></td>
+                        <td><strong>{{ w.exercise_name }}</strong></td>
+                        <td>{{ w.sets }} sets</td>
+                        <td>{{ w.repetitions }}</td>
+                        <td>{{ w.assigned_trainer.get_full_name|default:"Gym Desk" }}</td>
+                        <td>{{ w.instructions|default:"-" }}</td>
+                        <td>
+                            <a href="{% url 'workout_edit' w.id %}">Edit</a> | 
+                            <a href="{% url 'workout_delete' w.id %}" style="color: #dc2626;">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="margin: 0; color: #64748b;">No workout plans found for the selected criteria.</p>
+    {% endif %}
+</div>
+
+<p>
+    <a href="{% url 'dashboard_admin' %}">&laquo; Back to Admin Dashboard</a>
+</p>
+{% endblock %}

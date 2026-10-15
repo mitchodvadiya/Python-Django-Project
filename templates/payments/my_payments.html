@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}My Payment Receipts - Gym Management System{% endblock %}
+
+{% block content %}
+<h2>My Payment Receipts</h2>
+<p>Below is your complete record of membership payments and receipts.</p>
+
+<table border="1" cellpadding="6" cellspacing="0">
+    <tr>
+        <td><strong>Total Amount Paid to Date:</strong></td>
+        <td><strong>Rs. {{ total_paid }}</strong></td>
+    </tr>
+</table>
+
+<br>
+
+{% if payments %}
+    <table border="1" cellpadding="6" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Receipt #</th>
+                <th>Plan / Description</th>
+                <th>Amount (Rs.)</th>
+                <th>Payment Date</th>
+                <th>Payment Mode</th>
+                <th>Status</th>
+                <th>Notes</th>
+                <th>Receipt</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pay in payments %}
+                <tr>
+                    <td>#{{ pay.id }}</td>
+                    <td>
+                        {% if pay.membership %}
+                            {{ pay.membership.plan.name }}
+                        {% else %}
+                            Gym Membership Fee
+                        {% endif %}
+                    </td>
+                    <td><strong>Rs. {{ pay.amount }}</strong></td>
+                    <td>{{ pay.payment_date }}</td>
+                    <td>{{ pay.get_payment_method_display }}</td>
+                    <td><span class="badge badge-paid">{{ pay.payment_status }}</span></td>
+                    <td>{{ pay.notes|default:"-" }}</td>
+                    <td>
+                        <a href="{% url 'payment_receipt' pay.id %}" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.82rem;">View Receipt</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No payment records found.</p>
+{% endif %}
+
+<p>
+    <a href="{% url 'dashboard_member' %}">&laquo; Back to Member Dashboard</a>
+</p>
+{% endblock %}

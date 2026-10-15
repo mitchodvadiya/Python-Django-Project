@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Daily Attendance Log - Gym Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+            <h2>Gym Attendance Log</h2>
+            <p style="margin: 0;">Monitor member arrivals, check-in timestamps, and departure records.</p>
+        </div>
+        <div>
+            <a href="{% url 'mark_attendance' %}" class="btn btn-success">+ Record Member Check-in</a>
+        </div>
+    </div>
+</div>
+
+<div class="stat-grid">
+    <div class="stat-card card-success">
+        <div class="stat-label">Currently Inside Gym</div>
+        <div class="stat-value">{{ currently_inside }}</div>
+        <p style="margin: 0; font-size: 0.85rem; color: #16a34a;">Active entries without checkout today</p>
+    </div>
+</div>
+
+<div class="card">
+    <!-- Date Filter Form -->
+    <form method="GET" action="{% url 'attendance_list' %}" style="margin-bottom: 0;">
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <label for="id_date"><strong>Filter by Date:</strong></label>
+            <input type="date" name="date" id="id_date" value="{{ date_filter|default:'' }}" style="max-width: 220px;">
+            <input type="submit" value="Filter Date" class="btn">
+            <a href="{% url 'attendance_list' %}?all=true" class="btn btn-secondary">View All History</a>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    {% if records %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Member Name</th>
+                    <th>Date</th>
+                    <th>Check-in Time</th>
+                    <th>Check-out Time</th>
+                    <th>Visit Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in records %}
+                    <tr>
+                        <td>{{ a.id }}</td>
+                        <td><strong>{{ a.member.get_full_name|default:a.member.username }}</strong></td>
+                        <td>{{ a.attendance_date }}</td>
+                        <td>{{ a.check_in_time }}</td>
+                        <td>{{ a.check_out_time|default:"Active (Inside)" }}</td>
+                        <td>
+                            {% if a.check_out_time %}
+                                <span class="badge badge-approved">Completed</span>
+                            {% else %}
+                                <span class="badge badge-pending">INSIDE GYM</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if not a.check_out_time %}
+                                <form method="POST" action="{% url 'record_checkout' a.id %}">
+                                    {% csrf_token %}
+                                    <input type="submit" value="Check Out Now" class="btn btn-danger" style="padding: 4px 10px; font-size: 0.8rem;">
+                                </form>
+                            {% endif %}
+                            <a href="{% url 'attendance_edit' a.id %}">Edit</a> | 
+                            <a href="{% url 'attendance_delete' a.id %}" style="color: #dc2626;">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="margin: 0; color: #64748b;">No attendance records found for this date.</p>
+    {% endif %}
+</div>
+
+<p>
+    <a href="{% url 'dashboard_admin' %}">&laquo; Back to Admin Dashboard</a>
+</p>
+{% endblock %}

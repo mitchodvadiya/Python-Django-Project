@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Pending Approval - Gym Management System{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 680px; margin: 40px auto; text-align: center;">
+    <h2>Registration Submitted - Pending Approval</h2>
+    <p style="font-size: 1.05rem; color: #475569;">
+        Thank you for registering with the <strong>Gym Management System</strong>!
+    </p>
+
+    <div class="alert alert-warning" style="text-align: left; margin: 20px 0;">
+        <div>
+            <strong>Under Gym Policy:</strong>
+            All new Member and Trainer registrations require verification and approval by the <strong>Gym Administrator</strong> before access is unlocked.
+        </div>
+    </div>
+
+    <div style="text-align: left; background-color: #f8fafc; padding: 18px 24px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 24px;">
+        <h4 style="margin-top: 0;">Next Steps:</h4>
+        <ol style="margin-bottom: 0;">
+            <li>The administrator reviews your profile details in the <em>Pending Approvals</em> console.</li>
+            <li>Upon verification, your account is activated and marked as <span class="badge badge-approved">Approved</span>.</li>
+            <li>You can then immediately sign in with your chosen credentials.</li>
+        </ol>
+    </div>
+
+    <p>
+        <a href="{% url 'login' %}" class="btn">&larr; Return to Sign In</a>
+    </p>
+</div>
+{% endblock %}

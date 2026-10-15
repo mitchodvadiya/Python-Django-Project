@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Members List - Gym Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+            <h2>Gym Members Directory</h2>
+            <p style="margin: 0;">Manage member profiles, contact information, trainer pairings, and subscription plans.</p>
+        </div>
+        <div>
+            <a href="{% url 'member_create' %}" class="btn btn-success">+ Add New Member</a>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <!-- Search Form (Module 3 Requirement) -->
+    <form method="GET" action="{% url 'member_list' %}" style="margin-bottom: 0;">
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <input type="text" name="q" id="q" value="{{ search_query }}" placeholder="Search members by name, username, or phone..." style="flex: 1; max-width: 480px;">
+            <input type="submit" value="Search" class="btn">
+            {% if search_query %}
+                <a href="{% url 'member_list' %}" class="btn btn-secondary">Clear Search</a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    {% if members %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Full Name</th>
+                    <th>Username</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Joining Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in members %}
+                    <tr>
+                        <td>{{ m.id }}</td>
+                        <td><strong><a href="{% url 'member_detail' m.id %}">{{ m.full_name }}</a></strong></td>
+                        <td>{{ m.user.username }}</td>
+                        <td>{{ m.phone }}</td>
+                        <td>{{ m.email }}</td>
+                        <td>{{ m.joining_date }}</td>
+                        <td>
+                            {% if m.user.profile.status == 'approved' %}
+                                <span class="badge badge-approved">Approved</span>
+                            {% elif m.user.profile.status == 'pending' %}
+                                <span class="badge badge-pending">Pending</span>
+                            {% else %}
+                                <span class="badge badge-rejected">{{ m.user.profile.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'member_detail' m.id %}">View</a> | 
+                            <a href="{% url 'member_edit' m.id %}">Edit</a> | 
+                            <a href="{% url 'member_assign' m.id %}">Assign Trainer</a> | 
+                            <a href="{% url 'member_delete' m.id %}" style="color: #dc2626;">Delete</a> | 
+                            <form method="POST" action="{% url 'toggle_user_active' m.user.id %}">
+                                {% csrf_token %}
+                                {% if m.user.profile.status == 'approved' %}
+                                    <input type="submit" value="Deactivate" class="btn btn-danger">
+                                {% else %}
+                                    <input type="submit" value="Activate" class="btn btn-success">
+                                {% endif %}
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="margin: 0; color: #64748b;">No members found matching your search criteria.</p>
+    {% endif %}
+</div>
+
+<p>
+    <a href="{% url 'dashboard_admin' %}">&laquo; Back to Admin Dashboard</a>
+</p>
+{% endblock %}

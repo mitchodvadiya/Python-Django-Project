@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Payments Audit Report - Gym Management System{% endblock %}
+
+{% block content %}
+<h2>Payments & Collections Audit Report</h2>
+<p>Financial ledger of all membership fee transactions, methods, and dues.</p>
+
+<p>
+    <a href="{% url 'report_overview' %}">&laquo; Back to Reports Hub</a> | 
+    <a href="{% url 'payment_list' %}">Go to Payments Ledger</a>
+</p>
+
+<table border="1" cellpadding="6" cellspacing="0">
+    <tr>
+        <td><strong>Total Recorded Paid Collections:</strong></td>
+        <td><strong>Rs. {{ total_paid }}</strong></td>
+    </tr>
+    <tr>
+        <td><strong>Total Pending Dues:</strong></td>
+        <td><strong>Rs. {{ total_pending }}</strong></td>
+    </tr>
+</table>
+
+<br>
+
+{% if payments %}
+    <table border="1" cellpadding="6" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Receipt #</th>
+                <th>Member Full Name</th>
+                <th>Username</th>
+                <th>Membership Plan</th>
+                <th>Amount (Rs.)</th>
+                <th>Payment Date</th>
+                <th>Payment Method</th>
+                <th>Status</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in payments %}
+                <tr>
+                    <td>#{{ p.id }}</td>
+                    <td><strong>{{ p.member.get_full_name|default:p.member.username }}</strong></td>
+                    <td>{{ p.member.username }}</td>
+                    <td>{{ p.membership.plan.name|default:"General Gym Fee" }}</td>
+                    <td><strong>Rs. {{ p.amount }}</strong></td>
+                    <td>{{ p.payment_date }}</td>
+                    <td>{{ p.get_payment_method_display }}</td>
+                    <td><strong>{{ p.payment_status }}</strong></td>
+                    <td>{{ p.notes|default:"-" }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No payment records found.</p>
+{% endif %}
+{% endblock %}

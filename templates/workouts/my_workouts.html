@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}My Weekly Workout Routine - Gym Management System{% endblock %}
+
+{% block content %}
+<h2>My Weekly Workout Plan</h2>
+<p>Below is your personalized fitness routine assigned by your trainer and gym administration. Follow your daily split for best results.</p>
+
+{% if has_workouts %}
+    {% for day, exercises in workouts_by_day.items %}
+        <h3>{{ day }}</h3>
+        {% if exercises %}
+            <table border="1" cellpadding="6" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Exercise Name</th>
+                        <th>Sets</th>
+                        <th>Repetitions</th>
+                        <th>Assigned Trainer</th>
+                        <th>Instructions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in exercises %}
+                        <tr>
+                            <td><strong>{{ item.exercise_name }}</strong></td>
+                            <td>{{ item.sets }} sets</td>
+                            <td>{{ item.repetitions }}</td>
+                            <td>{{ item.assigned_trainer.get_full_name|default:"Gym Desk" }}</td>
+                            <td>{{ item.instructions|default:"Follow proper gym form and control." }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p><em>Rest day or no exercises scheduled for {{ day }}.</em></p>
+        {% endif %}
+    {% endfor %}
+{% else %}
+    <p>No workout routine is currently assigned to you. Please ask the gym administrator to configure your exercises.</p>
+{% endif %}
+
+<p>
+    <a href="{% url 'dashboard_member' %}">&laquo; Back to Member Dashboard</a>
+</p>
+{% endblock %}

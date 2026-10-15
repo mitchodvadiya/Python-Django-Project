@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Member Subscriptions - Gym Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+            <h2>Member Subscriptions &amp; Validity</h2>
+            <p style="margin: 0;">Monitor active packages, calculate remaining durations, and renew expiring plans.</p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <a href="{% url 'assign_plan' %}" class="btn btn-success">+ Assign Plan to Member</a>
+            <a href="{% url 'plan_list' %}" class="btn btn-secondary">Manage Plans</a>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 16px;">
+        <strong>Filter Subscriptions:</strong>
+        <a href="{% url 'member_membership_list' %}?status=all" class="btn {% if status_filter == 'all' %}{% else %}btn-secondary{% endif %}" style="padding: 5px 12px; font-size: 0.85rem;">All Subscriptions</a>
+        <a href="{% url 'member_membership_list' %}?status=active" class="btn {% if status_filter == 'active' %}btn-success{% else %}btn-secondary{% endif %}" style="padding: 5px 12px; font-size: 0.85rem;">Active Only</a>
+        <a href="{% url 'member_membership_list' %}?status=expired" class="btn {% if status_filter == 'expired' %}btn-danger{% else %}btn-secondary{% endif %}" style="padding: 5px 12px; font-size: 0.85rem;">Expired Only</a>
+    </div>
+
+    {% if memberships %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Member Full Name</th>
+                    <th>Subscribed Plan</th>
+                    <th>Fee (Rs.)</th>
+                    <th>Start Date</th>
+                    <th>Expiry Date</th>
+                    <th>Days Remaining</th>
+                    <th>Current Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sub in memberships %}
+                    <tr>
+                        <td><strong><a href="{% url 'member_detail' sub.member.member_record.id %}">{{ sub.member.get_full_name|default:sub.member.username }}</a></strong></td>
+                        <td>{{ sub.plan.name }}</td>
+                        <td>Rs. {{ sub.plan.price }}</td>
+                        <td>{{ sub.start_date }}</td>
+                        <td><strong>{{ sub.expiry_date }}</strong></td>
+                        <td>
+                            {% if sub.status == 'active' %}
+                                <strong>{{ sub.days_remaining }} Days</strong>
+                            {% else %}
+                                <span style="color: #dc2626;">0 (Expired)</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if sub.status == 'active' %}
+                                <span class="badge badge-active">ACTIVE</span>
+                            {% else %}
+                                <span class="badge badge-expired">EXPIRED</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'renew_membership' sub.id %}" class="btn" style="padding: 4px 10px; font-size: 0.8rem;">Renew</a>
+                            <a href="{% url 'payment_create' %}?member_id={{ sub.member.id }}" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.8rem;">+ Payment</a>
+                            <a href="{% url 'membership_delete' sub.id %}" class="btn btn-danger" style="padding: 4px 10px; font-size: 0.8rem;">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="margin: 0; color: #64748b;">No member subscriptions found for this filter criteria.</p>
+    {% endif %}
+</div>
+
+<p>
+    <a href="{% url 'dashboard_admin' %}">&laquo; Back to Admin Dashboard</a>
+</p>
+{% endblock %}

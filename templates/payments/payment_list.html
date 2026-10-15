@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Payments Ledger - Gym Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+            <h2>Gym Payments &amp; Financial Ledger</h2>
+            <p style="margin: 0;">Record fee transactions, track collection modes, and monitor outstanding dues.</p>
+        </div>
+        <div>
+            <a href="{% url 'payment_create' %}" class="btn btn-success">+ Record New Payment</a>
+        </div>
+    </div>
+</div>
+
+<div class="stat-grid">
+    <div class="stat-card card-success">
+        <div class="stat-label">Total Realized Collections</div>
+        <div class="stat-value">Rs. {{ total_paid }}</div>
+        <span class="badge badge-paid">Paid Status</span>
+    </div>
+
+    <div class="stat-card card-warning">
+        <div class="stat-label">Total Pending Dues</div>
+        <div class="stat-value">Rs. {{ total_pending }}</div>
+        <span class="badge badge-pending">Pending Verification</span>
+    </div>
+</div>
+
+<div class="card">
+    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 16px;">
+        <strong>Filter Ledger:</strong>
+        <a href="{% url 'payment_list' %}?status=all" class="btn {% if status_filter == 'all' %}{% else %}btn-secondary{% endif %}" style="padding: 5px 12px; font-size: 0.85rem;">All Payments</a>
+        <a href="{% url 'payment_list' %}?status=Paid" class="btn {% if status_filter == 'Paid' %}btn-success{% else %}btn-secondary{% endif %}" style="padding: 5px 12px; font-size: 0.85rem;">Paid Only</a>
+        <a href="{% url 'payment_list' %}?status=Pending" class="btn {% if status_filter == 'Pending' %}btn-danger{% else %}btn-secondary{% endif %}" style="padding: 5px 12px; font-size: 0.85rem;">Pending Dues Only</a>
+    </div>
+
+    {% if payments %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Receipt #</th>
+                    <th>Member Name</th>
+                    <th>Related Package</th>
+                    <th>Amount</th>
+                    <th>Payment Date</th>
+                    <th>Payment Mode</th>
+                    <th>Payment Status</th>
+                    <th>Notes</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pay in payments %}
+                    <tr>
+                        <td><strong>#{{ pay.id }}</strong></td>
+                        <td><strong>{{ pay.member.get_full_name|default:pay.member.username }}</strong></td>
+                        <td>
+                            {% if pay.membership %}
+                                {{ pay.membership.plan.name }}
+                            {% else %}
+                                <em style="color: #64748b;">General Fee</em>
+                            {% endif %}
+                        </td>
+                        <td><strong>Rs. {{ pay.amount }}</strong></td>
+                        <td>{{ pay.payment_date }}</td>
+                        <td>{{ pay.get_payment_method_display }}</td>
+                        <td>
+                            {% if pay.payment_status == 'Paid' %}
+                                <span class="badge badge-paid">PAID</span>
+                            {% else %}
+                                <span class="badge badge-pending">PENDING</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ pay.notes|default:"-" }}</td>
+                        <td>
+                            <a href="{% url 'payment_receipt' pay.id %}">Receipt</a> | 
+                            <a href="{% url 'payment_edit' pay.id %}">Edit</a> | 
+                            <a href="{% url 'payment_delete' pay.id %}" style="color: #dc2626;">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="margin: 0; color: #64748b;">No payment records found for this filter.</p>
+    {% endif %}
+</div>
+
+<p>
+    <a href="{% url 'dashboard_admin' %}">&laquo; Back to Admin Dashboard</a>
+</p>
+{% endblock %}

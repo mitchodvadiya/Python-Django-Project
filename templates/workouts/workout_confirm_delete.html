@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirm Delete Workout - Gym Management System{% endblock %}
+
+{% block content %}
+<h2>Confirm Workout Exercise Deletion</h2>
+
+<p>
+    Are you sure you want to permanently delete <strong>{{ workout.exercise_name }}</strong> ({{ workout.workout_day }}) for member <strong>{{ workout.member.get_full_name|default:workout.member.username }}</strong>?
+</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Yes, Permanently Delete Exercise">
+    <a href="{% url 'workout_list' %}">Cancel</a>
+</form>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gym Management System{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <div class="brand-container">
+                <h1>Gym Management System</h1>
+            </div>
+        </div>
+        <nav>
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}"><strong>Dashboard</strong></a>
+                
+                {% if user.is_superuser or user.profile.role == 'admin' %}
+                    <!-- Admin Navigation Links -->
+                    <a href="{% url 'member_list' %}">Members</a>
+                    <a href="{% url 'pending_users_list' %}">Pending Approvals</a>
+                    <a href="{% url 'plan_list' %}">Plans</a>
+                    <a href="{% url 'member_membership_list' %}">Subscriptions</a>
+                    <a href="{% url 'payment_list' %}">Payments</a>
+                    <a href="{% url 'attendance_list' %}">Attendance</a>
+                    <a href="{% url 'workout_list' %}">Workouts</a>
+                    <a href="{% url 'report_overview' %}">Reports</a>
+                    <a href="/admin/">Django Admin</a>
+                {% elif user.profile.role == 'member' %}
+                    <!-- Member Navigation Links -->
+                    <a href="{% url 'my_workouts' %}">My Workout Routine</a>
+                    <a href="{% url 'my_attendance' %}">My Attendance Log</a>
+                    <a href="{% url 'my_payments' %}">My Payments</a>
+                    <a href="{% url 'member_profile_edit' %}">My Profile</a>
+                {% endif %}
+                
+                <a href="{% url 'logout' %}" class="logout-btn">Log Out ({{ user.username }})</a>
+            {% else %}
+                <!-- Public Guest Navigation Links -->
+                <a href="{% url 'login' %}">Log In</a>
+                <a href="{% url 'register' %}">Register as Member</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <!-- Django Flash Messages (Success / Warning / Error) -->
+    <main>
+        {% if messages %}
+            <div class="messages-container">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p>
+            &copy; 2026 <strong>Gym Management System</strong>
+            <br>
+            Developed using Python Django and SQLite.
+        </p>
+    </footer>
+</body>
+</html>

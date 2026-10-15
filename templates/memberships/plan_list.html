@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Membership Plans - Gym Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+            <h2>Gym Membership Packages</h2>
+            <p style="margin: 0;">Configure subscription pricing and duration options (e.g. Monthly, Quarterly, Half-Yearly, Yearly).</p>
+        </div>
+        <div>
+            <a href="{% url 'plan_create' %}" class="btn btn-success">+ Create New Plan</a>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    {% if plans %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Plan Name</th>
+                    <th>Duration</th>
+                    <th>Price</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for plan in plans %}
+                    <tr>
+                        <td><strong>#{{ plan.id }}</strong></td>
+                        <td><strong>{{ plan.name }}</strong></td>
+                        <td><span class="badge badge-approved">{{ plan.duration_days }} Days</span></td>
+                        <td><strong>Rs. {{ plan.price }}</strong></td>
+                        <td>{{ plan.description|default:"-" }}</td>
+                        <td>
+                            <a href="{% url 'plan_edit' plan.id %}">Edit</a> | 
+                            <a href="{% url 'plan_delete' plan.id %}" style="color: #dc2626;">Delete</a> | 
+                            <a href="{% url 'assign_plan' %}" class="btn" style="padding: 4px 10px; font-size: 0.8rem;">Assign</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="margin: 0; color: #64748b;">No membership plans configured yet. Click above to create one.</p>
+    {% endif %}
+</div>
+
+<p>
+    <a href="{% url 'dashboard_admin' %}">&laquo; Back to Admin Dashboard</a>
+</p>
+{% endblock %}

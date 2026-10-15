@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Members Report - Gym Management System{% endblock %}
+
+{% block content %}
+<h2>Members Report</h2>
+<p>Complete official registry of gym members.</p>
+
+<p>
+    <a href="{% url 'report_overview' %}">&laquo; Back to Reports Hub</a> | 
+    <a href="{% url 'member_list' %}">Go to Members Management</a>
+</p>
+
+{% if members %}
+    <table border="1" cellpadding="6" cellspacing="0">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Member Full Name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Joining Date</th>
+                <th>Account Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in members %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><strong>{{ m.full_name }}</strong></td>
+                    <td>{{ m.user.username }}</td>
+                    <td>{{ m.email }}</td>
+                    <td>{{ m.phone }}</td>
+                    <td>{{ m.address|default:"-" }}</td>
+                    <td>{{ m.joining_date }}</td>
+                    <td><strong>{{ m.account_status }}</strong></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No member records in database.</p>
+{% endif %}
+{% endblock %}

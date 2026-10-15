@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Correct Attendance Record - Gym Management System{% endblock %}
+
+{% block content %}
+<h2>Correct Attendance Record #{{ attendance.id }}</h2>
+<p>
+    Admin correction tool: Update date, check-in, or check-out times for 
+    <strong>{{ attendance.member.get_full_name|default:attendance.member.username }}</strong>.
+</p>
+
+{% if form.errors %}
+    <p><strong>Please correct errors:</strong></p>
+    <ul>
+        {% for field in form %}
+            {% for error in field.errors %}
+                <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<form method="POST">
+    {% csrf_token %}
+    <table border="1" cellpadding="6" cellspacing="0">
+        {{ form.as_table }}
+        <tr>
+            <td colspan="2">
+                <input type="submit" value="Save Corrected Record">
+            </td>
+        </tr>
+    </table>
+</form>
+
+<p>
+    <a href="{% url 'attendance_list' %}">&laquo; Cancel and return to Attendance Log</a>
+</p>
+{% endblock %}

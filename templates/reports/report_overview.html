@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}System Reports - Gym Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Gym Management System Reports (Module 9)</h2>
+    <p style="margin: 0;">Comprehensive audit dashboards and tabular records for academic demonstration.</p>
+</div>
+
+<!-- Stat Grid Cards -->
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="stat-label">Total Members</div>
+        <div class="stat-value">{{ stats.total_members }}</div>
+        <a href="{% url 'report_members' %}">View Members Report &rarr;</a>
+    </div>
+
+    <div class="stat-card card-success">
+        <div class="stat-label">Active Subscriptions</div>
+        <div class="stat-value">{{ stats.active_memberships }}</div>
+        <a href="{% url 'report_memberships' %}">Subscriptions Report &rarr;</a>
+    </div>
+
+    <div class="stat-card card-success">
+        <div class="stat-label">Total Revenue</div>
+        <div class="stat-value">Rs. {{ stats.total_revenue }}</div>
+        <a href="{% url 'report_payments' %}">Financial Report &rarr;</a>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-label">Total Attendances</div>
+        <div class="stat-value">{{ stats.total_attendance }}</div>
+        <a href="{% url 'report_attendance' %}">Attendance Report &rarr;</a>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-label">Workout Plans</div>
+        <div class="stat-value">{{ stats.total_workouts }}</div>
+        <a href="{% url 'report_workouts' %}">Workouts Report &rarr;</a>
+    </div>
+</div>
+
+<div class="card">
+    <h3>Available Tabular Reports:</h3>
+    <ul style="line-height: 2; margin-left: 20px;">
+        <li><a href="{% url 'report_members' %}"><strong>1. Members Report</strong></a> &mdash; Complete registry of all members, contact details, and statuses.</li>
+        <li><a href="{% url 'report_pending' %}"><strong>2. Pending Registrations Report</strong></a> &mdash; Awaiting approval requests with registration timestamps.</li>
+        <li><a href="{% url 'report_memberships' %}"><strong>3. Memberships Report</strong></a> &mdash; Active and expired subscriptions with duration and expiry dates.</li>
+        <li><a href="{% url 'report_payments' %}"><strong>4. Payments Report</strong></a> &mdash; Full financial audit of paid and pending fees with totals.</li>
+        <li><a href="{% url 'report_attendance' %}"><strong>5. Attendance Report</strong></a> &mdash; Daily gym attendance log with check-in and check-out tracking.</li>
+        <li><a href="{% url 'report_workouts' %}"><strong>6. Workouts Report</strong></a> &mdash; All exercise routines assigned across gym members.</li>
+    </ul>
+</div>
+
+<p>
+    <a href="{% url 'dashboard_admin' %}">&laquo; Back to Admin Dashboard</a>
+</p>
+{% endblock %}

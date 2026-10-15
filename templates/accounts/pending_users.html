@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Pending Registration Approvals - Gym Management System{% endblock %}
+
+{% block content %}
+<h2>Pending Registration Requests</h2>
+<p>
+    Review all visitor registration requests. Once approved, the user can immediately log in and access their role-specific dashboard.
+</p>
+
+{% if pending_profiles %}
+    <table border="1" cellpadding="6" cellspacing="0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Full Name</th>
+                <th>Requested Role</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Specialization / Address</th>
+                <th>Requested On</th>
+                <th>Approval Decision</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in pending_profiles %}
+                <tr>
+                    <td>{{ item.user.id }}</td>
+                    <td><strong>{{ item.user.username }}</strong></td>
+                    <td>{{ item.user.get_full_name|default:"Not Provided" }}</td>
+                    <td><strong>{{ item.get_role_display }}</strong></td>
+                    <td>{{ item.user.email }}</td>
+                    <td>{{ item.phone }}</td>
+                    <td>
+                        {% if item.role == 'trainer' %}
+                            <strong>Specialization:</strong> {{ item.specialization|default:"None" }}
+                        {% else %}
+                            <strong>Address:</strong> {{ item.address|default:"None" }}
+                        {% endif %}
+                    </td>
+                    <td>{{ item.user.date_joined|date:"Y-m-d H:i" }}</td>
+                    <td>
+                        <form method="POST" action="{% url 'approve_user' item.user.id %}">
+                            {% csrf_token %}
+                            <input type="submit" value="Approve Account">
+                        </form>
+                        <form method="POST" action="{% url 'reject_user' item.user.id %}">
+                            {% csrf_token %}
+                            <input type="submit" value="Reject">
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p><em>No pending registration requests found. All user requests have been processed.</em></p>
+{% endif %}
+
+<p>
+    <a href="{% url 'dashboard_admin' %}">&laquo; Back to Admin Dashboard</a>
+</p>
+{% endblock %}

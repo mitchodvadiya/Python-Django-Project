@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirm Delete Payment - Gym Management System{% endblock %}
+
+{% block content %}
+<h2>Confirm Payment Record Deletion</h2>
+
+<p>
+    Are you sure you want to permanently delete Payment Receipt <strong>#{{ payment.id }}</strong> of <strong>Rs. {{ payment.amount }}</strong> for member <strong>{{ payment.member.get_full_name|default:payment.member.username }}</strong>?
+</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Yes, Permanently Delete Payment">
+    <a href="{% url 'payment_list' %}">Cancel</a>
+</form>
+{% endblock %}

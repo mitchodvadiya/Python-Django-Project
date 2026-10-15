@@ -1,0 +1,301 @@
+{% extends 'base.html' %}
+
+{% block title %}Member Dashboard - Gym Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2>Member Dashboard</h2>
+            <p style="margin: 0;">Welcome, <strong>{{ user.get_full_name|default:user.username }}</strong>! Your personal gym portal.</p>
+        </div>
+        <div>
+            <a href="{% url 'member_profile_edit' %}" class="btn btn-secondary">Update Contact Details</a>
+        </div>
+    </div>
+</div>
+
+<!-- Key Highlights Stat Cards -->
+<div class="stat-grid">
+    <div class="stat-card {% if active_membership %}card-success{% else %}card-danger{% endif %}">
+        <div class="stat-label">Membership Status</div>
+        <div class="stat-value" style="font-size: 1.45rem;">
+            {% if active_membership %}
+                <span class="badge badge-active">ACTIVE</span>
+            {% else %}
+                <span class="badge badge-expired">NO ACTIVE PLAN</span>
+            {% endif %}
+        </div>
+        {% if active_membership %}
+            <p style="margin: 0; font-size: 0.85rem; color: #16a34a;"><strong>{{ days_remaining }} Days Left</strong> (Valid until {{ active_membership.expiry_date }})</p>
+        {% else %}
+            <p style="margin: 0; font-size: 0.85rem; color: #dc2626;">Contact front desk to enroll</p>
+        {% endif %}
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-label">Gym Trainer / Coach</div>
+        <div class="stat-value" style="font-size: 1.25rem; margin-top: 10px;">
+            Admin (Head Coach)
+        </div>
+        <p style="margin: 0; font-size: 0.85rem; color: #64748b;">
+            Gym Management &amp; Fitness Instructor
+        </p>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-label">Workout Routine</div>
+        <div class="stat-value">{{ workout_plans.count }}</div>
+        <a href="{% url 'my_workouts' %}">View Weekly Split &rarr;</a>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-label">Recent Visits</div>
+        <div class="stat-value">{{ recent_attendance.count }}</div>
+        <a href="{% url 'my_attendance' %}">Attendance Log &rarr;</a>
+    </div>
+
+    <div class="stat-card card-success">
+        <div class="stat-label">Payment Receipts</div>
+        <div class="stat-value">{{ recent_payments.count }}</div>
+        <a href="{% url 'my_payments' %}">View Receipts &rarr;</a>
+    </div>
+</div>
+
+<div class="card">
+    <h3>Current Membership Package</h3>
+    {% if active_membership %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Subscribed Package</th>
+                    <th>Duration</th>
+                    <th>Start Date</th>
+                    <th>Expiry Date</th>
+                    <th>Days Remaining</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>{{ active_membership.plan.name }}</strong></td>
+                    <td>{{ active_membership.plan.duration_days }} Days</td>
+                    <td>{{ active_membership.start_date }}</td>
+                    <td><strong>{{ active_membership.expiry_date }}</strong></td>
+                    <td><strong>{{ days_remaining }} Days</strong></td>
+                    <td><span class="badge badge-active">ACTIVE</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        {% if active_payment %}
+            <div style="margin-top: 15px; padding: 12px 16px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <span style="font-size: 1.05rem; font-weight: 700; color: #166534;">Payment Receipt #{{ active_payment.id }}</span>
+                    <br>
+                    <span style="font-size: 0.85rem; color: #15803d;">Fee: <strong>Rs. {{ active_payment.amount }}</strong> &bull; Paid via {{ active_payment.get_payment_method_display }} on {{ active_payment.payment_date }}</span>
+                </div>
+                <div>
+                    <a href="{% url 'payment_receipt' active_payment.id %}" class="btn btn-success" style="font-size: 0.88rem;">View / Print Official Receipt</a>
+                </div>
+            </div>
+        {% endif %}
+
+        <div style="margin-top: 18px;">
+            <details>
+                <summary style="cursor: pointer; font-weight: 600; color: #0284c7;">Upgrade or Switch to Another Gym Package &darr;</summary>
+                <div style="margin-top: 10px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Package Name</th>
+                                <th>Duration</th>
+                                <th>Price (Rs.)</th>
+                                <th>Details</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for plan in available_plans %}
+                                <tr>
+                                    <td><strong>{{ plan.name }}</strong></td>
+                                    <td>{{ plan.duration_days }} Days</td>
+                                    <td><strong>Rs. {{ plan.price }}</strong></td>
+                                    <td>{{ plan.description|default:"Standard gym facilities and access" }}</td>
+                                    <td>
+                                        <form method="POST" action="{% url 'enroll_plan' plan.id %}" style="margin: 0;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-success" style="padding: 4px 10px; font-size: 0.82rem;" onclick="return confirm('Confirm switch/renewal to {{ plan.name }} for Rs. {{ plan.price }}?');">
+                                                Enroll Now
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </details>
+        </div>
+    {% else %}
+        <p style="margin-bottom: 12px; color: #856404; background-color: #fff3cd; padding: 10px; border: 1px solid #ffeeba; border-radius: 4px;">
+            <strong>Notice:</strong> You currently have no active membership. Choose any package below to enroll and instantly generate your subscription and payment receipt.
+        </p>
+
+        <h4>Available Gym Packages to Join</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Package Name</th>
+                    <th>Duration</th>
+                    <th>Price (Rs.)</th>
+                    <th>Package Details</th>
+                    <th>Enrollment</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for plan in available_plans %}
+                    <tr>
+                        <td><strong>{{ plan.name }}</strong></td>
+                        <td>{{ plan.duration_days }} Days</td>
+                        <td><strong>Rs. {{ plan.price }}</strong></td>
+                        <td>{{ plan.description|default:"Full gym facilities and coaching supervision" }}</td>
+                        <td>
+                            <form method="POST" action="{% url 'enroll_plan' plan.id %}" style="margin: 0;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success" style="padding: 5px 12px; font-size: 0.85rem;" onclick="return confirm('Confirm enrollment in {{ plan.name }} for Rs. {{ plan.price }}?');">
+                                    Enroll &amp; Pay
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5">No packages currently configured by admin.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h3 style="margin: 0;">Your Assigned Weekly Exercises</h3>
+        <a href="{% url 'my_workouts' %}">View Full Routine &rarr;</a>
+    </div>
+
+    {% if workout_plans %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Day</th>
+                    <th>Exercise</th>
+                    <th>Sets</th>
+                    <th>Reps</th>
+                    <th>Exercise Instructions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for w in workout_plans %}
+                    <tr>
+                        <td><span class="badge badge-approved">{{ w.workout_day }}</span></td>
+                        <td><strong>{{ w.exercise_name }}</strong></td>
+                        <td>{{ w.sets }} sets</td>
+                        <td>{{ w.repetitions }}</td>
+                        <td>{{ w.instructions|default:"Follow proper gym form and technique" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="margin: 0; color: #64748b;">No workouts assigned yet. Gym administration will configure your daily routine.</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h3 style="margin: 0;">Recent Gym Attendance Log</h3>
+        <a href="{% url 'my_attendance' %}">All Visits &rarr;</a>
+    </div>
+
+    {% if recent_attendance %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Visit Date</th>
+                    <th>Check-in Time</th>
+                    <th>Check-out Time</th>
+                    <th>Visit Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in recent_attendance %}
+                    <tr>
+                        <td>{{ a.attendance_date }}</td>
+                        <td>{{ a.check_in_time }}</td>
+                        <td>{{ a.check_out_time|default:"Active Inside" }}</td>
+                        <td>
+                            {% if a.check_out_time %}
+                                <span class="badge badge-approved">Completed</span>
+                            {% else %}
+                                <span class="badge badge-pending">Currently Inside</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="margin: 0; color: #64748b;">No attendance history logged yet.</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h3 style="margin: 0;">Recent Fee Payment Receipts</h3>
+        <a href="{% url 'my_payments' %}">All Receipts &rarr;</a>
+    </div>
+
+    {% if recent_payments %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Receipt #</th>
+                    <th>Plan / Package</th>
+                    <th>Amount</th>
+                    <th>Payment Date</th>
+                    <th>Payment Method</th>
+                    <th>Status</th>
+                    <th>Official Receipt</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in recent_payments %}
+                    <tr>
+                        <td><strong>#{{ p.id }}</strong></td>
+                        <td>{{ p.membership.plan.name|default:"General Fee" }}</td>
+                        <td><strong>Rs. {{ p.amount }}</strong></td>
+                        <td>{{ p.payment_date }}</td>
+                        <td>{{ p.get_payment_method_display }}</td>
+                        <td>
+                            {% if p.payment_status == 'Paid' %}
+                                <span class="badge badge-paid">PAID</span>
+                            {% else %}
+                                <span class="badge badge-pending">PENDING</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'payment_receipt' p.id %}" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.82rem;">
+                                View Receipt
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="margin: 0; color: #64748b;">No payment records logged yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

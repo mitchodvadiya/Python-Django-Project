@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - Gym Management System{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 720px; margin: 20px auto;">
+    <h2>Member Registration</h2>
+    <p>
+        Fill out your details below to apply for gym membership. 
+        <strong>Approval Policy:</strong> Your submission will be placed in <span class="badge badge-pending">Pending Approval</span>. 
+        An administrator will verify your account before access is granted.
+    </p>
+
+    {% if form.errors %}
+        <div class="alert alert-error">
+            <div>
+                <strong>Please correct the following errors:</strong>
+                <ul style="margin: 6px 0 0 18px;">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+
+    <form method="POST" action="{% url 'register' %}">
+        {% csrf_token %}
+        <table>
+            <tbody>
+                <tr>
+                    <td style="width: 32%;"><strong>{{ form.username.label_tag }} *</strong></td>
+                    <td>{{ form.username }}</td>
+                </tr>
+                <tr>
+                    <td><strong>{{ form.first_name.label_tag }} *</strong></td>
+                    <td>{{ form.first_name }}</td>
+                </tr>
+                <tr>
+                    <td><strong>{{ form.last_name.label_tag }} *</strong></td>
+                    <td>{{ form.last_name }}</td>
+                </tr>
+                <tr>
+                    <td><strong>{{ form.email.label_tag }} *</strong></td>
+                    <td>{{ form.email }}</td>
+                </tr>
+                <tr>
+                    <td><strong>{{ form.phone.label_tag }} *</strong></td>
+                    <td>{{ form.phone }}</td>
+                </tr>
+                <tr>
+                    <td><strong>{{ form.address.label_tag }}</strong></td>
+                    <td>{{ form.address }}</td>
+                </tr>
+                <tr>
+                    <td><strong>{{ form.password.label_tag }} *</strong></td>
+                    <td>{{ form.password }}</td>
+                </tr>
+                <tr>
+                    <td><strong>{{ form.confirm_password.label_tag }} *</strong></td>
+                    <td>{{ form.confirm_password }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top: 18px;">
+            <input type="submit" value="Submit Registration Request" class="btn btn-success" style="width: 100%; padding: 12px; font-size: 1rem;">
+        </div>
+    </form>
+
+    <p style="text-align: center; margin-top: 18px; margin-bottom: 0;">
+        Already have an approved account? <a href="{% url 'login' %}"><strong>Log In to Your Dashboard</strong></a>
+    </p>
+</div>
+{% endblock %}

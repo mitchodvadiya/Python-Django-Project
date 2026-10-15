@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Memberships Report - Gym Management System{% endblock %}
+
+{% block content %}
+<h2>Memberships & Subscriptions Report</h2>
+<p>Official report of active and expired member packages with duration tracking.</p>
+
+<p>
+    <a href="{% url 'report_overview' %}">&laquo; Back to Reports Hub</a> | 
+    <a href="{% url 'member_membership_list' %}">Go to Subscriptions</a>
+</p>
+
+{% if memberships %}
+    <table border="1" cellpadding="6" cellspacing="0">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Member Full Name</th>
+                <th>Username</th>
+                <th>Package Plan</th>
+                <th>Price (Rs.)</th>
+                <th>Start Date</th>
+                <th>Expiry Date</th>
+                <th>Days Remaining</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in memberships %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><strong>{{ m.member.get_full_name|default:m.member.username }}</strong></td>
+                    <td>{{ m.member.username }}</td>
+                    <td>{{ m.plan.name }}</td>
+                    <td>Rs. {{ m.plan.price }}</td>
+                    <td>{{ m.start_date }}</td>
+                    <td><strong>{{ m.expiry_date }}</strong></td>
+                    <td>
+                        {% if m.status == 'active' %}
+                            {{ m.days_remaining }} Days
+                        {% else %}
+                            0 (Expired)
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if m.status == 'active' %}
+                            <strong>ACTIVE</strong>
+                        {% else %}
+                            EXPIRED
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No membership subscriptions recorded.</p>
+{% endif %}
+{% endblock %}

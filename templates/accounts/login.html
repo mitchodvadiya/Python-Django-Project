@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}User Login - Gym Management System{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 520px; margin: 20px auto;">
+    <h2>System Login</h2>
+    <p>Please enter your credentials to access your dashboard. All roles (Administrator, Trainer, Member) authenticate securely here.</p>
+
+    <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div style="margin-bottom: 16px;">
+            <label for="id_username" style="display:block; margin-bottom: 6px; font-weight: 600;">Username:</label>
+            <input type="text" name="username" id="id_username" required placeholder="Enter username (e.g. admin)" style="max-width: 100%;">
+        </div>
+        <div style="margin-bottom: 20px;">
+            <label for="id_password" style="display:block; margin-bottom: 6px; font-weight: 600;">Password:</label>
+            <input type="password" name="password" id="id_password" required placeholder="Enter password (e.g. admin123)" style="max-width: 100%;">
+        </div>
+        <div>
+            <input type="submit" value="Sign In to Dashboard" style="width: 100%; padding: 12px; font-size: 1rem;">
+        </div>
+    </form>
+
+    <p style="text-align: center; margin-top: 16px; margin-bottom: 0;">
+        Do not have an account? <a href="{% url 'register' %}"><strong>Register as Member</strong></a>
+    </p>
+</div>
+
+<div class="card" style="max-width: 860px; margin: 30px auto;">
+    <h3>Demo Link:</h3>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Role</th>
+                <th>Username</th>
+                <th>Password</th>
+                <th>Status</th>
+                <th>System Access</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Administrator</strong></td>
+                <td><code>admin</code></td>
+                <td><code>admin123</code></td>
+                <td><span class="badge badge-approved">Approved (Superuser)</span></td>
+                <td>Full system control, statistics, approvals, payments, reports</td>
+            </tr>
+            <tr>
+                <td><strong>Member (Active)</strong></td>
+                <td><code>member_amit</code></td>
+                <td><code>member123</code></td>
+                <td><span class="badge badge-approved">Approved</span></td>
+                <td>Active Quarterly Plan, assigned workouts, attendance log</td>
+            </tr>
+            <tr>
+                <td><strong>Member (Expired)</strong></td>
+                <td><code>member_priya</code></td>
+                <td><code>member123</code></td>
+                <td><span class="badge badge-expired">Expired</span></td>
+                <td>Expired Monthly Plan (demonstrates renewal workflow)</td>
+            </tr>
+            <tr>
+                <td><strong>Pending Member</strong></td>
+                <td><code>member_rohit</code></td>
+                <td><code>member123</code></td>
+                <td><span class="badge badge-pending">Pending Approval</span></td>
+                <td>Cannot log in until Admin approves from dashboard</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

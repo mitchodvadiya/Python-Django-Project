@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Workout Assignments Report - Gym Management System{% endblock %}
+
+{% block content %}
+<h2>Workout Routine Assignments Report</h2>
+<p>Official report of all exercises, sets, reps, and workout schedules assigned across gym members.</p>
+
+<p>
+    <a href="{% url 'report_overview' %}">&laquo; Back to Reports Hub</a> | 
+    <a href="{% url 'workout_list' %}">Go to Workouts Management</a>
+</p>
+
+{% if workouts %}
+    <table border="1" cellpadding="6" cellspacing="0">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Member Full Name</th>
+                <th>Username</th>
+                <th>Assigned Day</th>
+                <th>Exercise Name</th>
+                <th>Sets</th>
+                <th>Repetitions</th>
+                <th>Assigned Trainer</th>
+                <th>Instructions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for w in workouts %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><strong>{{ w.member.get_full_name|default:w.member.username }}</strong></td>
+                    <td>{{ w.member.username }}</td>
+                    <td><strong>{{ w.workout_day }}</strong></td>
+                    <td>{{ w.exercise_name }}</td>
+                    <td>{{ w.sets }}</td>
+                    <td>{{ w.repetitions }}</td>
+                    <td>{{ w.assigned_trainer.get_full_name|default:"Gym Desk" }}</td>
+                    <td>{{ w.instructions|default:"-" }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No workout routines assigned yet.</p>
+{% endif %}
+{% endblock %}
